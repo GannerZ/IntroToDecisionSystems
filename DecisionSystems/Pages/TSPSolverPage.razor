@@ -98,9 +98,21 @@ else
         public void Solve(IReadOnlyList<Location> cities)
         {
             solution = solver.Solve(cities);
+
+            if(solution==null)
+            {
+                throw new Exception($"Solver {Name}: returned null solution.");
+            }
+
+            if (solution.Any(index => index < 1 || index > cities.Count))
+            {
+                throw new Exception($"Error in solver {Name} Only indices from 1 to {cities.Count} are allowed, got {string.Join(",", solution)}.");
+            }
+
+
             if (solution.Distinct().Count() != cities.Count)
             {
-                Console.WriteLine($"WARNING: Solver {solver} returned invalid solution.");
+               throw new Exception($"Error in Solver {Name}: returned invalid solution.");
             }
         }
 
@@ -122,7 +134,8 @@ else
 
     private readonly IReadOnlyCollection<UITSPSolver> solvers = new UITSPSolver[]
     {
-    };
+        new UITSPSolver(new DummySolver(), "Dummy solver","orange")
+};
 
     protected override async Task OnInitializedAsync()
     {
